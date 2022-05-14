@@ -1,0 +1,87 @@
+.f {display: flex;}
+.mt40 {margin-top:40px}
+.ml20 {margin-left: 20px;}
+.w324 {width: 324px;}
+.w900 {width: 900px;}
+.h500 {height: 500px;}
+.vh50 {height: 50vh}
+.color-155bd4{color:#155bd4}
+.border {
+    padding: 15px;
+    border: 1px solid rgb(217, 217, 217);
+}
+.emulator {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #EEEEEE;
+    .menu-head {
+        height: 42px;
+        background: #212121;
+        font-size: 14px;
+        text-align: center;
+        line-height: 42px;
+        color: #fff;
+    };
+    .menu-msg{
+        width: 18%;
+    };
+    .menu-item{
+        position: relative;
+        width: 27.3%;
+        button {width: 100%;}
+        .menu-item-children {
+            position: absolute;
+            bottom: 40px;
+            .el-button {
+                margin: 0;    
+                max-width: 88px;
+                overflow: hidden;
+                white-space: nowrap;
+                span {text-overflow: ellipsis;}
+            }
+        };
+        .menu-item-children:before {
+            content: " ";
+            position: absolute;
+            display: block;
+            width: 0;
+            height: 0;
+            bottom: -5px;
+            right: 44%;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 6px;
+            margin-left: -6px;
+            border-top-color: #fff;
+            border-bottom-width: 0;
+        };
+    };
+    .menu-floor {
+        display: flex;
+        // justify-content: space-between;
+        padding: 0;
+        .el-col { 
+            .el-button {width: 100%;padding: 20px auto;} 
+        }
+    }   
+}
+
+.slide-fade-enter-active {
+    transition: all .3s ease;
+}
+.slide-fade-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active for below version 2.1.8 */ {
+    transform: translateX(10px);
+    opacity: 0;
+}
+
+.text-msg-editor-field {
+    line-height: 1.4;
+    min-height: 100px;
+    color: #222;
+    background-color: #155bd4;
+}

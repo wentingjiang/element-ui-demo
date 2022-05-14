@@ -1,0 +1,87 @@
+<!--
+ * @Author: jwt 1974890451@qq.com
+ * @Date: 2022-05-15 02:54:41
+ * @LastEditors: jwt 1974890451@qq.com
+ * @LastEditTime: 2022-05-15 03:10:49
+ * @FilePath: \test\src\views\wechat\menu.html
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
+
+<div class="f">
+    <div class="w324">
+        <div class="h500 emulator">
+            <div class="menu-head">公众号</div>
+            <div class="menu-floor">
+                <div class="menu-msg"><el-button><i class="el-icon-chat-dot-square"></i></el-button></div>
+                <div class="menu-item" v-for="item in form.menuLists" :key="item.name">
+                    <el-button @click="setMenuVisiableA">{{item.name}}</el-button>
+                    <div class="menu-item-children" v-if="visibleA">
+                      <template v-for="i in item.sub_button">
+                        <el-col ><el-button>{{i.name}}</el-button></el-col>
+                      </template>
+                      <el-col><el-button @click="onAddMenuSub"><i class="el-icon-plus"></i></el-button></el-col>
+                    </div>
+                </div>
+                <div class="menu-item" v-show="visibleBtnAdd"><el-button @click="onAddMenuMain"><i class="el-icon-plus"></i></el-button></div>
+            </div>
+        </div>
+    </div>
+    <div class="w900 ml20">
+        <div>
+          <div class="border">公众号名称：<span class="color-155bd4">壳崛商务</span></div>
+          <el-form class="mt25" ref="form" :model="form" :label-position="labelPosition" label-width="80px">
+            <div class="border">
+              <el-form-item label="新建菜单">
+                <el-input
+                      size="small"
+                      type="text"
+
+                      v-model="foo.name"
+                      maxlength="15"
+                      show-word-limit
+                >
+                </el-input>
+              </el-form-item>
+              <el-form-item label="菜单内容">
+                <el-radio-group v-model="currentMenuType">
+                  <el-radio :label="TAB.MESSAGE">发送消息</el-radio>
+                  <el-radio :label="TAB.JUMP">直接跳转</el-radio>
+                  <el-radio :label="TAB.FUNCTION">功能动作</el-radio>
+                </el-radio-group>
+                <div class="mt25">
+                  <transition name="slide-fade">
+                    <el-tabs type="border-card" v-show="isShowSendMessage">
+                      <el-tab-pane label="文字">文字</el-tab-pane>
+                      <el-tab-pane label="图片">图片</el-tab-pane>
+                      <el-tab-pane label="图文">图文</el-tab-pane>
+                      <el-tab-pane label="小程序">小程序</el-tab-pane>
+                    </el-tabs>
+                  </transition>
+                  <transition name="slide-fade">
+                    <el-card shadow="never" v-show="isShowJump">
+                      <el-form ref="form" :model="form" label-width="80px">
+                        <el-form-item label="跳转形式">
+                          <el-radio-group v-model="form.action">
+                            <el-radio label="H5"></el-radio>
+                            <el-radio label="小程序"></el-radio>
+                          </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="跳转链接">
+                          <el-input v-model="form.url"></el-input>
+                        </el-form-item>
+                      </el-form>
+                    </el-card>
+                    <div contenteditable="true" class="text-msg-editor-field"></div>
+                  </transition>
+                </div>
+              </el-form-item>
+            </div>
+            <el-form-item class="mt40">
+              <el-button type="primary" @click="onSubmit">立即创建</el-button>
+              <el-button>取消</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+    </div>
+
+</div>
