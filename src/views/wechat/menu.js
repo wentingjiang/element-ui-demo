@@ -11,7 +11,10 @@ export default {
     return {
       visibleA: false,
       visibleB: false,
-      visibleBtnAdd: true,
+      isOpenMenuList: [],
+      currentMenuIndex: 0,
+      isShowAddMenuButton: true,
+      isShowAddSubMenuButtonList: [],
       labelPosition: 'left',
       TAB,
       currentMenuType: TAB.MESSAGE,
@@ -29,7 +32,7 @@ export default {
       form: {
         action: '',
         url: '',
-        menuLists: [
+        menuList: [
           {
             image_url: '',
             type: 'view',
@@ -43,7 +46,7 @@ export default {
               {
                 image_url: '',
                 type: 'view',
-                name: '商城0.1',
+                name: '商城0.0',
                 key: '',
                 url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
                 media_id: '',
@@ -54,7 +57,7 @@ export default {
               {
                 image_url: '',
                 type: 'view',
-                name: '商城0.2',
+                name: '商城0.1',
                 key: '',
                 url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
                 media_id: '',
@@ -83,69 +86,80 @@ export default {
       return this.currentMenuType === this.TAB.JUMP
     }
   },
-  watch () {
-    // visibleBtnAdd:function(){
+  watch: {
+    'form.menuList.length': {
+      handler (newVal, oldVal) {
+        this.isOpenMenuList = new Array(newVal)
+        this.isOpenMenuList.fill(false)
+        this.isShowAddSubMenuButtonList = new Array(newVal)
+        this.isShowAddSubMenuButtonList.fill(true)
+        // 新增一个菜单时，将新增项设置为当前菜单并打开
+        if (newVal - oldVal === 1) {
+          this.$set(this.isOpenMenuList, oldVal, true)
+          this.currentMenuIndex = oldVal
+        }
+      },
+      immediate: true
+    }
+  },
+  created () {
 
-    // }
   },
   methods: {
-    setMenuVisiableA () {
-      this.visibleA = true
-      this.visibleB = false
+    onSubmit () {},
+    setMenuVisiableA (index) {
+      if (this.currentMenuIndex !== index) {
+        if (this.isOpenMenuList[this.currentMenuIndex]) {
+          this.$set(this.isOpenMenuList, this.currentMenuIndex, false)
+        }
+        this.currentMenuIndex = index
+      }
+      this.$set(this.isOpenMenuList, index, !this.isOpenMenuList[index])
     },
     setMenuVisiableB () {
       this.visibleA = false
       this.visibleB = true
     },
-    onAddMenuMain () {
-      if (this.form.menuLists.length + 1 > 3) {
-        console.log('按钮超过三个了', this.form.menuLists.length + 1)
-        // onRemoveBtnAdd()
-      } else {
-        console.log('按钮少于三个，可以添加')
-        this.form.menuLists.push(
-          {
-            image_url: '',
-            type: 'view',
-            name: '商城1',
-            key: '',
-            url: 'https://www.mzbjd.com/addons/yun_shop/?menu#/home?i=5',
-            media_id: '',
-            appid: '',
-            pagepath: '',
-            sub_button: [
-              {
-                image_url: '',
-                type: 'view',
-                name: '商城1.1',
-                key: '',
-                url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
-                media_id: '',
-                appid: '',
-                pagepath: '',
-                sub_button: null
-              },
-              {
-                image_url: '',
-                type: 'view',
-                name: '商城1.2',
-                key: '',
-                url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
-                media_id: '',
-                appid: '',
-                pagepath: '',
-                sub_button: null
-              }
-            ]
-          }
-        )
+    /**
+     * 添加菜单
+     */
+    onAddMenu () {
+      if (this.form.menuList.length === 2) {
+        this.isShowAddMenuButton = false
       }
+      const newMenu = {
+        image_url: '',
+        type: 'view',
+        name: `商城${this.currentMenuIndex + 1}`,
+        key: '',
+        url: 'https://www.mzbjd.com/addons/yun_shop/?menu#/home?i=5',
+        media_id: '',
+        appid: '',
+        pagepath: '',
+        sub_button: []
+      }
+      this.form.menuList.push(newMenu)
     },
-    onAddMenuSub () {
-      console.log(222)
-    },
-    onRemoveBtnAdd () {
-      this.visibleBtnAdd = false
+    /**
+     * 添加子菜单
+     */
+    onAddSubMenu () {
+      const subMenuCount = this.form.menuList[this.currentMenuIndex].sub_button.length
+      if (subMenuCount === 4) {
+        this.$set(this.isShowAddSubMenuButtonList, this.currentMenuIndex, false)
+      }
+      const subMenu = {
+        image_url: '',
+        type: 'view',
+        name: `商城${this.currentMenuIndex}.${subMenuCount}`,
+        key: '',
+        url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
+        media_id: '',
+        appid: '',
+        pagepath: '',
+        sub_button: null
+      }
+      this.form.menuList[this.currentMenuIndex].sub_button.push(subMenu)
     }
   }
 }
