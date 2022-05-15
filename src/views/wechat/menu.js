@@ -13,7 +13,6 @@ export default {
       visibleB: false,
       isOpenMenuList: [],
       currentMenuIndex: 0,
-      isShowAddMenuButton: true,
       isShowAddSubMenuButtonList: [],
       labelPosition: 'left',
       TAB,
@@ -32,42 +31,7 @@ export default {
       form: {
         action: '',
         url: '',
-        menuList: [
-          {
-            image_url: '',
-            type: 'view',
-            name: '商城0',
-            key: '',
-            url: 'https://www.mzbjd.com/addons/yun_shop/?menu#/home?i=5',
-            media_id: '',
-            appid: '',
-            pagepath: '',
-            sub_button: [
-              {
-                image_url: '',
-                type: 'view',
-                name: '商城0.0',
-                key: '',
-                url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
-                media_id: '',
-                appid: '',
-                pagepath: '',
-                sub_button: null
-              },
-              {
-                image_url: '',
-                type: 'view',
-                name: '商城0.1',
-                key: '',
-                url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
-                media_id: '',
-                appid: '',
-                pagepath: '',
-                sub_button: null
-              }
-            ]
-          }
-        ],
+        menuList: [],
         region: '',
         date1: '',
         date2: '',
@@ -84,28 +48,80 @@ export default {
     },
     isShowJump () {
       return this.currentMenuType === this.TAB.JUMP
-    }
-  },
-  watch: {
-    'form.menuList.length': {
-      handler (newVal, oldVal) {
-        this.isOpenMenuList = new Array(newVal)
-        this.isOpenMenuList.fill(false)
-        this.isShowAddSubMenuButtonList = new Array(newVal)
-        this.isShowAddSubMenuButtonList.fill(true)
-        // 新增一个菜单时，将新增项设置为当前菜单并打开
-        if (newVal - oldVal === 1) {
-          this.$set(this.isOpenMenuList, oldVal, true)
-          this.currentMenuIndex = oldVal
-        }
-      },
-      immediate: true
+    },
+    isShowAddMenuButton () {
+      return this.form?.menuList?.length < 3
+    },
+    currentMenuName () {
+      return this.form.menuList[this.currentMenuIndex].name
     }
   },
   created () {
-
+    this.init()
   },
   methods: {
+    async init () {
+      this.form = await this.getWechatData()
+      const menuList = this.form.menuList
+      if (menuList?.length) {
+        this.isOpenMenuList = new Array(menuList.length).fill(false)
+        this.isShowAddSubMenuButtonList = menuList.map(item => item.sub_button?.length < 5)
+      }
+    },
+    getWechatData () {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const params = {
+            action: '',
+            url: '',
+            menuList: [
+              {
+                image_url: '',
+                type: 'view',
+                name: '商城0',
+                key: '',
+                url: 'https://www.mzbjd.com/addons/yun_shop/?menu#/home?i=5',
+                media_id: '',
+                appid: '',
+                pagepath: '',
+                sub_button: [
+                  {
+                    image_url: '',
+                    type: 'view',
+                    name: '商城0.0',
+                    key: '',
+                    url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
+                    media_id: '',
+                    appid: '',
+                    pagepath: '',
+                    sub_button: null
+                  },
+                  {
+                    image_url: '',
+                    type: 'view',
+                    name: '商城0.1',
+                    key: '',
+                    url: 'http://shop/addons/yun_shop/?menu#/member/balance?i=5',
+                    media_id: '',
+                    appid: '',
+                    pagepath: '',
+                    sub_button: null
+                  }
+                ]
+              }
+            ],
+            region: '',
+            date1: '',
+            date2: '',
+            delivery: false,
+            type: [],
+            resource: '',
+            desc: ''
+          }
+          resolve(params)
+        })
+      }, 2000)
+    },
     onSubmit () {},
     setMenuVisiableA (index) {
       if (this.currentMenuIndex !== index) {
@@ -124,13 +140,10 @@ export default {
      * 添加菜单
      */
     onAddMenu () {
-      if (this.form.menuList.length === 2) {
-        this.isShowAddMenuButton = false
-      }
       const newMenu = {
         image_url: '',
         type: 'view',
-        name: `商城${this.currentMenuIndex + 1}`,
+        name: `商城${this.form.menuList.length}`,
         key: '',
         url: 'https://www.mzbjd.com/addons/yun_shop/?menu#/home?i=5',
         media_id: '',
@@ -139,6 +152,8 @@ export default {
         sub_button: []
       }
       this.form.menuList.push(newMenu)
+      this.isOpenMenuList.push(false)
+      this.isShowAddSubMenuButtonList.push(true)
     },
     /**
      * 添加子菜单
