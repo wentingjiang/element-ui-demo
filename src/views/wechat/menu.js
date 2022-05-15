@@ -12,7 +12,8 @@ export default {
       visibleA: false,
       visibleB: false,
       isOpenMenuList: [],
-      currentMenuIndex: 0,
+      currentMenuIndex: -1,
+      currentSubMenuIndex: -1,
       isShowAddSubMenuButtonList: [],
       labelPosition: 'left',
       TAB,
@@ -49,17 +50,76 @@ export default {
     isShowJump () {
       return this.currentMenuType === this.TAB.JUMP
     },
+    // 是否显示新增菜单按钮
     isShowAddMenuButton () {
       return this.form?.menuList?.length < 3
     },
+    // 当前菜单名称
     currentMenuName () {
-      return this.form.menuList[this.currentMenuIndex].name
+      if (!this.form.menuList.length) {
+        return ''
+      }
+      if (this.currentSubMenuIndex > -1) {
+        return this.form.menuList[this.currentMenuIndex].sub_button[this.currentSubMenuIndex].name
+      }
+      if (this.currentMenuIndex > -1) {
+        return this.form.menuList[this.currentMenuIndex].name
+      }
+    }
+  },
+  watch: {
+    currentMenuIndex (newVal, oldVal) {
+      // 关闭上一个打开的当前菜单
+      if (this.isOpenMenuList[oldVal]) {
+        this.$set(this.isOpenMenuList, oldVal, false)
+      }
     }
   },
   created () {
     this.init()
   },
   methods: {
+    /**
+     * 删除菜单
+     */
+    async  onDeleteMenu () {
+      try {
+        await this.$confirm(`删除后“${this.currentMenuName}”菜单下设置的内容将被删除`, '提示', {
+          type: 'warning'
+        })
+      } catch (error) {
+        return
+      }
+      if (this.currentSubMenuIndex > -1) {
+        const index = this.currentMenuIndex
+        const subIndex = this.currentSubMenuIndex
+        this.currentSubMenuIndex = -1
+        this.currentMenuIndex = -1
+        this.form.menuList[index].sub_button.splice(subIndex, 1)
+        return
+      }
+      if (this.currentMenuIndex > -1) {
+        const index = this.currentMenuIndex
+        this.currentMenuIndex = -1
+        this.form.menuList.splice(index, 1)
+      }
+    },
+    /**
+     * 点击菜单
+     * @param {*} index
+     */
+    onClickMenu (index) {
+      this.currentMenuIndex = index
+      this.currentSubMenuIndex = -1
+      this.$set(this.isOpenMenuList, index, !this.isOpenMenuList[index])
+    },
+    /**
+     * 点击子菜单
+     * @param {*} index
+     */
+    onClickSubMenu (index) {
+      this.currentSubMenuIndex = index
+    },
     async init () {
       this.form = await this.getWechatData()
       const menuList = this.form.menuList
@@ -123,19 +183,6 @@ export default {
       }, 2000)
     },
     onSubmit () {},
-    setMenuVisiableA (index) {
-      if (this.currentMenuIndex !== index) {
-        if (this.isOpenMenuList[this.currentMenuIndex]) {
-          this.$set(this.isOpenMenuList, this.currentMenuIndex, false)
-        }
-        this.currentMenuIndex = index
-      }
-      this.$set(this.isOpenMenuList, index, !this.isOpenMenuList[index])
-    },
-    setMenuVisiableB () {
-      this.visibleA = false
-      this.visibleB = true
-    },
     /**
      * 添加菜单
      */

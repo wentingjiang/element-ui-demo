@@ -2,7 +2,7 @@
  * @Author: jwt 1974890451@qq.com
  * @Date: 2022-05-15 02:54:41
  * @LastEditors: chase shao4598@outlook.com
- * @LastEditTime: 2022-05-15 20:39:11
+ * @LastEditTime: 2022-05-15 21:08:18
  * @FilePath: \test\src\views\wechat\menu.html
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,11 +17,11 @@
         </div>
         <template v-for="(item, index) in form.menuList">
           <div class="menu-item" :key="item.name">
-            <el-button @click="()=>setMenuVisiableA(index)">{{item.name}}</el-button>
+            <el-button @click="()=>onClickMenu(index)">{{item.name}}</el-button>
             <div class="menu-item-children" v-show="isOpenMenuList[index]">
-              <template v-for="subItem in item.sub_button">
+              <template v-for="(subItem, subIndex) in item.sub_button">
                 <el-col>
-                  <el-button>{{subItem.name}}</el-button>
+                  <el-button @click="()=>onClickSubMenu(subIndex)">{{subItem.name}}</el-button>
                 </el-col>
               </template>
               <el-col>
@@ -41,7 +41,7 @@
   <div class="w900 ml20">
     <div>
       <div class="border">公众号名称：<span class="color-155bd4">壳崛商务</span></div>
-      <div><span>{{currentMenuName}}</span><el-button type="text">删除菜单</el-button></div>
+      <div><span>{{currentMenuName}}</span><el-button type="text" @click="onDeleteMenu">删除菜单</el-button></div>
       <el-form class="mt25" ref="form" :model="form" :label-position="labelPosition" label-width="80px">
         <div class="border">
           <el-form-item label="新建菜单">
